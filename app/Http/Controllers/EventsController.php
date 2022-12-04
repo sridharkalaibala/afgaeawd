@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Workshop;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -101,7 +103,8 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 1');
+
+        return Event::with('workshops')->get();
     }
 
 
@@ -179,6 +182,14 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        $subQuery = Workshop::query()->select('event_id')
+            ->having('workshops.start', '>', Carbon::now())
+            ->groupBy('workshops.event_id')
+            ->orderBy('workshops.id', 'ASC');
+        return Event::query()->whereIn('events.id', $subQuery)
+            ->with(['workshops' => function ($q) {
+                $q->orderBy('workshops.id', 'ASC');
+            }])
+            ->get();
     }
 }
