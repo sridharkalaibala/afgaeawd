@@ -39,7 +39,6 @@ class ExampleTest extends TestCase
 
     public function testFutureEvents() {
         $dateFuture = (new Carbon())->addYears(1);
-
         $response = $this->get('/futureevents');
         $response->assertStatus(200)
             ->assertJsonCount(2)
